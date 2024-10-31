@@ -11,16 +11,14 @@ Run vulnerabilities scanner(s) and sync findings
 
 ### Setup
 
-Install the dependencies:
-
 ```bash
-uv sync
+./setup-dev.sh
 ```
 
-Setup the pre-commit hooks:
+### Usage
 
 ```bash
-uv run pre-commit install
+uv run python main.py
 ```
 
 ### Testing
