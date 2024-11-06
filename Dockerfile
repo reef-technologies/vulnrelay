@@ -12,4 +12,6 @@ RUN uv sync
 
 COPY src/ /app
 
-CMD ["uv", "run", "python", "main.py"]
+COPY cron/entry /etc/crontabs/root
+
+CMD ["crond", "-f", "-d", "8", "-c", "/etc/crontabs"]
