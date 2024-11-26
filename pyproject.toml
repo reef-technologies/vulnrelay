@@ -9,12 +9,8 @@ dependencies = [
     "requests>=2.32.3",
 ]
 
-[tool.uv]
-dev-dependencies = [
-    "ruff",
-    "mypy",
-    "pre-commit",
-    "freezegun",
+[dependency-groups]
+test = [
     "pytest",
     "pytest-watcher",
     "pytest-asyncio",
@@ -22,10 +18,25 @@ dev-dependencies = [
     "pytest-socket",
     "pytest-xdist",
     "pytest-subprocess>=1.5.2",
-    "responses>=0.25.3",
-    "faker>=30.8.1",
     "pytest-responses>=0.5.1",
+    "responses>=0.25.3",
+    "freezegun",
+    "faker>=30.8.1",
+]
+format = [
+    "ruff",
+]
+lint = [
+    "ruff",
+    "pre-commit",
+    "codespell",
+]
+type_check = [
+    "mypy",
     "types-requests>=2.32.0.20241016",
+]
+dev = [
+    "pre-commit"
 ]
 
 [tool.pytest.ini_options]

@@ -6,7 +6,7 @@ if ! command -v uv &> /dev/null; then
   echo "uv cannot not be found, please install it and try again"
 fi
 
-uv sync
+uv sync --group test --group format --group lint --group type_check --group dev
 if [ -z "${CI:-}" ]; then
   uv run pre-commit install --install-hooks
 fi
