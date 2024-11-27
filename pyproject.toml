@@ -7,7 +7,11 @@ requires-python = ">=3.12"
 dependencies = [
     "pydantic-settings>=2.6.0",
     "requests>=2.32.3",
+    "sentry-sdk>=2.19.0",
 ]
+
+[tool.uv]
+environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
 
 [dependency-groups]
 test = [
