@@ -37,6 +37,7 @@ class DefectDojoUploader(Uploader):
     def _get_form_data(self) -> dict[str, str | bytes]:
         return {
             "active": "true",
+            "auto_create_context": "true",
             "close_old_findings": "true",
             "product_name": self._product,
             "engagement_name": self._engagement,

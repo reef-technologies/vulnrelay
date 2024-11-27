@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     DD_API_KEY: str
     DD_ENVIRONMENT: str
     DD_PRODUCT: str
-    DD_ENGAGEMENT: str
+    DD_ENGAGEMENT: str = "vulnrelay"
 
     SCANNERS: list[ScannerOption] = ["grype"]
 
