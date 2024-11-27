@@ -31,7 +31,7 @@ def get_uploader() -> Uploader:
     return DefectDojoUploader(
         url=settings.DD_URL,
         api_key=settings.DD_API_KEY,
-        environment=settings.DD_ENVIRONMENT,
+        environment=settings.ENV,
         product=settings.DD_PRODUCT,
         engagement=settings.DD_ENGAGEMENT,
     )

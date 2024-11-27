@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # DefectDojo settings
     DD_URL: str
     DD_API_KEY: str
-    DD_ENVIRONMENT: str
+    ENV: str
     DD_PRODUCT: str
     DD_ENGAGEMENT: str = "vulnrelay"
 
