@@ -17,8 +17,7 @@ ScannerOption = Annotated[str, AfterValidator(validate_scanner), Field(validate_
 class Settings(BaseSettings):
     # DefectDojo settings
     DD_URL: str
-    DD_USERNAME: str
-    DD_PASSWORD: str
+    DD_API_KEY: str
     DD_ENVIRONMENT: str
     DD_PRODUCT: str
     DD_ENGAGEMENT: str

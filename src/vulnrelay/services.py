@@ -30,8 +30,7 @@ def get_running_images() -> Iterable[str]:
 def get_uploader() -> Uploader:
     return DefectDojoUploader(
         url=settings.DD_URL,
-        username=settings.DD_USERNAME,
-        password=settings.DD_PASSWORD,
+        api_key=settings.DD_API_KEY,
         environment=settings.DD_ENVIRONMENT,
         product=settings.DD_PRODUCT,
         engagement=settings.DD_ENGAGEMENT,
