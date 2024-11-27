@@ -24,7 +24,7 @@ def get_running_images() -> Iterable[str]:
     except subprocess.CalledProcessError as e:
         logger.error("Failed to get running images:\n%s", e.stderr.decode("utf-8"))
         raise
-    return result.stdout.decode("utf-8").splitlines()
+    return set(result.stdout.decode("utf-8").splitlines())
 
 
 def get_uploader() -> Uploader:

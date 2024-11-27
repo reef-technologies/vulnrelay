@@ -8,8 +8,8 @@ from vulnrelay.uploader.base import Uploader
 
 
 def test_get_running_images(fp: FakeProcess):
-    fp.register("docker ps --format {{.Image}}", stdout="image1\nimage2\n")
-    assert list(get_running_images()) == ["image1", "image2"]
+    fp.register("docker ps --format {{.Image}}", stdout="image1\nimage1\nimage2\n")
+    assert set(get_running_images()) == {"image1", "image2"}
 
 
 class StubUploader(Uploader):
