@@ -44,6 +44,7 @@ class DefectDojoUploader(Uploader):
             "environment": self._environment,
             "group_by": "component_name+component_version",
             "create_finding_groups_for_all_findings": "true",
+            "minimum_severity": "Medium",
         }
 
     def upload_scan_result(self, *, service: str, scan_type: str, content: str) -> None:
