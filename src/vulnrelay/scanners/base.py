@@ -26,3 +26,6 @@ class Scanner(abc.ABC):
 
     @abc.abstractmethod
     def scan_image(self, image_name: str) -> str: ...
+
+    @abc.abstractmethod
+    def scan_host(self) -> str: ...

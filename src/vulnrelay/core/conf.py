@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     SENTRY_DSN: str | None = None
 
     SCANNERS: list[ScannerOption] = ["grype"]
+    SCAN_HOST: bool = False
 
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",

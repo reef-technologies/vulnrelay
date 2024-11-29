@@ -1,6 +1,7 @@
 import argparse
 import logging
 
+from vulnrelay.core.conf import settings
 from vulnrelay.scanners.utils import validate_scanner
 from vulnrelay.services import run_workflow
 
@@ -11,6 +12,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scanners", nargs="+", help="List of scanners to run")
     parser.add_argument("--images", nargs="+", help="List of images to scan")
+    parser.add_argument("--scan-host", action="store_true", default=False, help="Do not scan host filesystem")
 
     namespace = parser.parse_args()
 
@@ -21,7 +23,16 @@ def main() -> None:
             except ValueError as e:
                 raise SystemExit(e)
 
-    run_workflow(images=namespace.images, scanner_names=namespace.scanners)
+    scan_host = namespace.scan_host or settings.SCAN_HOST
+
+    if scan_host:
+        logging.warning("Host scanning enabled. This may consume a lot of resources and take a long time")
+
+    run_workflow(
+        images=namespace.images,
+        scanner_names=namespace.scanners,
+        scan_host=scan_host,
+    )
 
 
 if __name__ == "__main__":
