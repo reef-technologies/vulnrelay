@@ -1,7 +1,7 @@
 import logging
 import subprocess
 
-from .base import Scanner
+from .base import Scanner, ScannerError
 
 logger = logging.getLogger(__name__)
 
@@ -30,16 +30,15 @@ class Grype(Scanner, name="grype"):
             target,
         ]
 
-        logger.info("Running command: %s", cmd)
+        logger.debug("Running command: %s", cmd)
 
         try:
             result = subprocess.run(cmd, check=True, capture_output=True)
         except subprocess.CalledProcessError as e:
-            logger.error("Grype scan failed:\n%s", e.stderr.decode("utf-8"))
-            raise
+            raise ScannerError("Command:\n%s\nReturned:%s\n", cmd, e.stderr.decode("utf-8")) from e
 
         output = result.stdout.decode("utf-8")
-        logger.debug("Grype scan result: %s", output)
+        logger.debug("Scan result: %s", output)
 
         return output
 

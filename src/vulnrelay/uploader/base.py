@@ -1,6 +1,9 @@
 import abc
 
 
+class UploaderError(Exception): ...
+
+
 class Uploader(abc.ABC):
     @abc.abstractmethod
     def upload_scan_result(self, *, service: str, scan_type: str, content: str) -> None:
