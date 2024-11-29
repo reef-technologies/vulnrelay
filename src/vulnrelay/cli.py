@@ -5,7 +5,10 @@ from vulnrelay.core.conf import settings
 from vulnrelay.scanners.utils import validate_scanner
 from vulnrelay.services import run_workflow
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
 
 
 def main() -> None:

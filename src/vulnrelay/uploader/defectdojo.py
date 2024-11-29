@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from .base import Uploader
+from .base import Uploader, UploaderError
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class DefectDojoUploader(Uploader):
     def upload_scan_result(self, *, service: str, scan_type: str, content: str) -> None:
         url = f"{self._url}/api/v2/import-scan/"
 
-        logger.info("Uploading scan result for service %s to %s", service, url)
+        logger.info("Sending request to %s", url)
 
         form_data = self._get_form_data()
         form_data["service"] = service
@@ -65,8 +65,4 @@ class DefectDojoUploader(Uploader):
         try:
             response.raise_for_status()
         except requests.HTTPError as e:
-            logger.error("Failed to upload scan result: %s", e)
-            logger.error("Response: %s", response.text)
-            raise
-
-        logger.info("Scan result uploaded successfully")
+            raise UploaderError("Server responded: %s", response.text) from e

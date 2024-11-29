@@ -53,21 +53,47 @@ def run_workflow(
 
         for image in images:
             logger.info("Scanning image %s with %s", image, scanner_name)
-            result = scanner.scan_image(image)
+            try:
+                result = scanner.scan_image(image)
+            except Exception:
+                logger.exception("Failed to scan image %s with %s", image, scanner_name)
+                continue
 
-            uploader.upload_scan_result(
-                service=image,
-                scan_type=scanner.defectdojo_name(),
-                content=result,
-            )
+            logger.info("Scan successful. Uploading result")
+
+            try:
+                uploader.upload_scan_result(
+                    service=image,
+                    scan_type=scanner.defectdojo_name(),
+                    content=result,
+                )
+            except Exception:
+                logger.exception("Failed to upload %s results for %s", scanner_name, image)
+                continue
+
+            logger.info("Upload successful")
 
         if not scan_host:
             continue
 
         logger.info("Scanning host filesystem with %s", scanner_name)
-        result = scanner.scan_host()
-        uploader.upload_scan_result(
-            service="host",
-            scan_type=scanner.defectdojo_name(),
-            content=result,
-        )
+
+        try:
+            result = scanner.scan_host()
+        except Exception:
+            logger.exception("Failed to scan host filesystem with %s", scanner_name)
+            continue
+
+        logger.info("Scan successful. Uploading result")
+
+        try:
+            uploader.upload_scan_result(
+                service="host",
+                scan_type=scanner.defectdojo_name(),
+                content=result,
+            )
+        except Exception:
+            logger.exception("Failed to upload %s results for host fs", scanner_name)
+            continue
+
+        logger.info("Upload successful")
