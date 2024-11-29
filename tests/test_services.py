@@ -22,14 +22,18 @@ class StubUploader(Uploader):
 
 class StubScanner(Scanner, name="stub"):
     scans: list[str] = []
-    result = ""
+    results: dict[str, str] = {}
 
     def defectdojo_name(self) -> str:
         return "stub"
 
     def scan_image(self, image_name: str) -> str:
         StubScanner.scans.append(image_name)
-        return StubScanner.result
+        return StubScanner.results[image_name]
+
+    def scan_host(self) -> str:
+        StubScanner.scans.append("host")
+        return StubScanner.results["host"]
 
 
 @pytest.fixture
@@ -43,14 +47,29 @@ def scan_result(faker: Faker):
 
 
 @pytest.fixture
-def scanner(scan_result: str):
+def images():
+    return ["image1", "image2"]
+
+
+@pytest.fixture
+def scan_results(images: list[str], faker: Faker):
+    results = {}
+    for image in images:
+        results[image] = faker.sentence()
+    results["host"] = faker.sentence()
+
+    return results
+
+
+@pytest.fixture
+def scanner(scan_results: dict[str, str]):
     instance = StubScanner()
-    StubScanner.result = scan_result
+    StubScanner.results = scan_results
     yield instance
-    StubScanner.result = ""
+    StubScanner.results = {}
 
 
-def test_run_workflow(scanner: StubScanner, uploader: StubUploader, scan_result: str):
+def test_run_workflow(scanner: StubScanner, uploader: StubUploader, scan_results: dict[str, str]):
     images = ["image1", "image2"]
 
     run_workflow(
@@ -59,7 +78,10 @@ def test_run_workflow(scanner: StubScanner, uploader: StubUploader, scan_result:
         get_uploader=lambda: uploader,
     )
 
-    assert scanner.scans == images
-    assert len(uploader.results) == len(images)
+    assert scanner.scans == images + ["host"]
+    assert len(uploader.results) == len(images) + 1
+
+    assert ("host", "stub", scan_results["host"]) in uploader.results
+
     for image in images:
-        assert (image, "stub", scan_result) in uploader.results
+        assert (image, "stub", scan_results[image]) in uploader.results

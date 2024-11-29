@@ -42,16 +42,17 @@ def run_workflow(
     images: Iterable[str] | None = None,
     scanner_names: Iterable[str] | None = None,
     get_uploader: Callable[[], Uploader] = get_uploader,
+    scan_host: bool = True,
 ) -> None:
     images = images or get_running_images()
     scanner_names = scanner_names or settings.SCANNERS
     uploader = get_uploader()
 
-    for image in images:
-        logger.info("Starting workflow for image %s", image)
+    for scanner_name in scanner_names:
+        scanner = Scanner.get_scanner(scanner_name)()
 
-        for scanner_name in scanner_names:
-            scanner = Scanner.get_scanner(scanner_name)()
+        for image in images:
+            logger.info("Scanning image %s with %s", image, scanner_name)
             result = scanner.scan_image(image)
 
             uploader.upload_scan_result(
@@ -59,3 +60,14 @@ def run_workflow(
                 scan_type=scanner.defectdojo_name(),
                 content=result,
             )
+
+        if not scan_host:
+            continue
+
+        logger.info("Scanning host filesystem with %s", scanner_name)
+        result = scanner.scan_host()
+        uploader.upload_scan_result(
+            service="host",
+            scan_type=scanner.defectdojo_name(),
+            content=result,
+        )

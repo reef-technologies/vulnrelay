@@ -12,7 +12,7 @@ class Grype(Scanner, name="grype"):
     def defectdojo_name(self) -> str:
         return "Anchore Grype"
 
-    def scan_image(self, image_name: str) -> str:
+    def _perform_scan(self, target: str, *extra_run_args: str) -> str:
         cmd = [
             "docker",
             "run",
@@ -23,10 +23,11 @@ class Grype(Scanner, name="grype"):
             "grype-cache:/root/.cache/grype",
             "-e",
             "GRYPE_DB_CACHE_DIR=/root/.cache/grype",
+            *extra_run_args,
             self.docker_image,
-            image_name,
             "-o",
             "json",
+            target,
         ]
 
         logger.info("Running command: %s", cmd)
@@ -41,3 +42,9 @@ class Grype(Scanner, name="grype"):
         logger.debug("Grype scan result: %s", output)
 
         return output
+
+    def scan_image(self, image_name: str) -> str:
+        return self._perform_scan(image_name)
+
+    def scan_host(self) -> str:
+        return self._perform_scan("dir:/host", "--volume", "/:/host:ro")
