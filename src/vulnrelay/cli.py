@@ -4,7 +4,7 @@ import logging
 from vulnrelay.scanners.utils import validate_scanner
 from vulnrelay.services import run_workflow
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 def main() -> None:
