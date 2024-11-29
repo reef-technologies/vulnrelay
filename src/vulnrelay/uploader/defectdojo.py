@@ -42,6 +42,8 @@ class DefectDojoUploader(Uploader):
             "product_name": self._product,
             "engagement_name": self._engagement,
             "environment": self._environment,
+            "group_by": "component_name+component_version",
+            "create_finding_groups_for_all_findings": "true",
         }
 
     def upload_scan_result(self, *, service: str, scan_type: str, content: str) -> None:
