@@ -16,10 +16,13 @@ class Grype(Scanner, name="grype"):
         cmd = [
             "docker",
             "run",
+            "--rm",
             "--volume",
             "/var/run/docker.sock:/var/run/docker.sock:ro",
             "--volume",
             "grype-cache:/root/.cache/grype",
+            "-e",
+            "GRYPE_DB_CACHE_DIR=/root/.cache/grype",
             self.docker_image,
             image_name,
             "-o",
