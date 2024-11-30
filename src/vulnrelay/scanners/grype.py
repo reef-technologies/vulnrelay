@@ -12,7 +12,9 @@ class Grype(Scanner, name="grype"):
     def defectdojo_name(self) -> str:
         return "Anchore Grype"
 
-    def _perform_scan(self, target: str, *extra_run_args: str) -> str:
+    def _perform_scan(self, grype_args: list[str], *, extra_run_args: list[str] | None = None) -> str:
+        extra_run_args = extra_run_args or []
+
         cmd = [
             "docker",
             "run",
@@ -27,7 +29,7 @@ class Grype(Scanner, name="grype"):
             self.docker_image,
             "-o",
             "json",
-            target,
+            *grype_args,
         ]
 
         logger.debug("Running command: %s", cmd)
@@ -35,7 +37,8 @@ class Grype(Scanner, name="grype"):
         try:
             result = subprocess.run(cmd, check=True, capture_output=True)
         except subprocess.CalledProcessError as e:
-            raise ScannerError("Command:\n%s\nReturned:%s\n", cmd, e.stderr.decode("utf-8")) from e
+            errout = e.stderr.decode("utf-8")
+            raise ScannerError(f"{errout}\nSubprocess command:\n{cmd}")
 
         output = result.stdout.decode("utf-8")
         logger.debug("Scan result: %s", output)
@@ -43,7 +46,20 @@ class Grype(Scanner, name="grype"):
         return output
 
     def scan_image(self, image_name: str) -> str:
-        return self._perform_scan(image_name)
+        return self._perform_scan([image_name])
 
     def scan_host(self) -> str:
-        return self._perform_scan("dir:/host", "--volume", "/:/host:ro")
+        excluded_dirs = [
+            "./proc",
+            "./sys",
+            "./tmp",
+            "./var",
+            "./home",
+        ]
+
+        grype_args = ["dir:/host"]
+
+        for _dir in excluded_dirs:
+            grype_args.extend(["--exclude", _dir])
+
+        return self._perform_scan(grype_args, extra_run_args=["--volume", "/:/host:ro"])
