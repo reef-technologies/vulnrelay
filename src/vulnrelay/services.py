@@ -5,7 +5,7 @@ import time
 from collections.abc import Callable, Iterable
 
 from vulnrelay.core.conf import settings
-from vulnrelay.metrics import Metric, MetricExporter, MetricNames
+from vulnrelay.metrics import MetricExporter, MetricNames
 from vulnrelay.scanners import Scanner
 from vulnrelay.uploader import DefectDojoUploader, Uploader
 
@@ -43,7 +43,7 @@ def get_uploader() -> Uploader:
 def get_metric_exporter() -> MetricExporter:
     return MetricExporter(
         metrics={
-            MetricNames.LAST_SCAN_AND_PUSH.value: Metric(),
+            MetricNames.LAST_SCAN_AND_PUSH.value: None,
         },
         path=os.path.join(settings.METRICS_DIR, settings.METRICS_FILENAME),
     )

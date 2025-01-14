@@ -1,31 +1,26 @@
 import os
 import shutil
+from pathlib import Path
 from typing import Any
-
-from .metric import Metric
 
 
 class MetricExporter:
-    def __init__(self, *, metrics: dict[str, Metric], path: str) -> None:
-        self.metrics: dict[str, Metric] = metrics
+    def __init__(self, *, metrics: dict[str, Any], path: str) -> None:
+        self.metrics: dict[str, Any] = metrics
         self.path = path
-        self.check_dir()
+        self._check_dir()
 
     def _get_export_content(self) -> str:
-        return "\n".join([f"{name} {metric.last_output}" for name, metric in self.metrics.items()])
+        return "\n".join([f"{name} {metric}" for name, metric in self.metrics.items()])
 
-    def check_dir(self) -> None:
-        dir = os.path.dirname(self.path)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+    def _check_dir(self) -> None:
+        dir_path = Path(self.path).parent
+        dir_path.mkdir(parents=True, exist_ok=True)
 
     def export_all(self) -> None:
         content = self._get_export_content()
         path = self.path
         temp_file = f"{path}.tmp"
-
-        if os.path.exists(path):
-            os.remove(path)
 
         with open(temp_file, "w") as file:
             file.write(content)
@@ -38,5 +33,5 @@ class MetricExporter:
 
     def save_and_export(self, *, values: dict[str, Any]) -> None:
         for name, value in values.items():
-            self.metrics[name].save_output(value=value)
-        self.export_all()
+            self.metrics[name] = value
+            self.export_all()
