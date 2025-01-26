@@ -3,15 +3,17 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from .metric import MetricNames
+
 
 class MetricExporter:
-    def __init__(self, *, metrics: dict[str, Any], path: str) -> None:
-        self.metrics: dict[str, Any] = metrics
+    def __init__(self, *, path: Path) -> None:
+        self.metrics: dict[MetricNames, Any] = dict()
         self.path = path
         self._check_dir()
 
     def _get_export_content(self) -> str:
-        return "\n".join([f"{name} {metric}" for name, metric in self.metrics.items()])
+        return "\n".join([f"{name.value} {metric}" for name, metric in self.metrics.items()])
 
     def _check_dir(self) -> None:
         dir_path = Path(self.path).parent
@@ -20,7 +22,7 @@ class MetricExporter:
     def export_all(self) -> None:
         content = self._get_export_content()
         path = self.path
-        temp_file = f"{path}.tmp"
+        temp_file = self.path.with_suffix(".tmp")
 
         with open(temp_file, "w") as file:
             file.write(content)
@@ -31,7 +33,7 @@ class MetricExporter:
             os.remove(temp_file)
             raise e
 
-    def save_and_export(self, *, values: dict[str, Any]) -> None:
+    def save_and_export(self, *, values: dict[MetricNames, Any]) -> None:
         for name, value in values.items():
             self.metrics[name] = value
             self.export_all()

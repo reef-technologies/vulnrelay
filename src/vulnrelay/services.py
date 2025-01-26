@@ -1,8 +1,8 @@
 import logging
-import os
 import subprocess
 import time
 from collections.abc import Callable, Iterable
+from pathlib import Path
 
 from vulnrelay.core.conf import settings
 from vulnrelay.metrics import MetricExporter, MetricNames
@@ -42,10 +42,7 @@ def get_uploader() -> Uploader:
 
 def get_metric_exporter() -> MetricExporter:
     return MetricExporter(
-        metrics={
-            MetricNames.LAST_SCAN_AND_PUSH.value: None,
-        },
-        path=os.path.join(settings.METRICS_DIR, settings.METRICS_FILENAME),
+        path=Path(settings.METRICS_DIR) / settings.METRICS_FILENAME,
     )
 
 
@@ -114,7 +111,7 @@ def run_workflow(
 
     try:
         metric_exporter.save_and_export(
-            values={MetricNames.LAST_SCAN_AND_PUSH.value: int(time.time())},
+            values={MetricNames.LAST_SCAN_AND_PUSH: time.time()},
         )
     except Exception:
         logger.exception("Failed to export metrics!")
