@@ -1,8 +1,11 @@
 import logging
 import subprocess
+import time
 from collections.abc import Callable, Iterable
+from pathlib import Path
 
 from vulnrelay.core.conf import settings
+from vulnrelay.metrics import MetricExporter, MetricNames
 from vulnrelay.scanners import Scanner
 from vulnrelay.uploader import DefectDojoUploader, Uploader
 
@@ -37,16 +40,24 @@ def get_uploader() -> Uploader:
     )
 
 
+def get_metric_exporter() -> MetricExporter:
+    return MetricExporter(
+        path=Path(settings.METRICS_DIR) / settings.METRICS_FILENAME,
+    )
+
+
 def run_workflow(
     *,
     images: Iterable[str] | None = None,
     scanner_names: Iterable[str] | None = None,
     get_uploader: Callable[[], Uploader] = get_uploader,
+    get_metric_exporter: Callable[[], MetricExporter] = get_metric_exporter,
     scan_host: bool = True,
 ) -> None:
     images = images or get_running_images()
     scanner_names = scanner_names or settings.SCANNERS
     uploader = get_uploader()
+    metric_exporter = get_metric_exporter()
 
     for scanner_name in scanner_names:
         scanner = Scanner.get_scanner(scanner_name)()
@@ -97,3 +108,10 @@ def run_workflow(
             continue
 
         logger.info("Upload successful")
+
+    try:
+        metric_exporter.save_and_export(
+            values={MetricNames.LAST_SCAN_AND_PUSH: time.time()},
+        )
+    except Exception:
+        logger.exception("Failed to export metrics!")

@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     SCANNERS: list[ScannerOption] = ["grype"]
     SCAN_HOST: bool = False
 
+    # Metric Exporter Settings
+    METRICS_DIR: str = "exporter_metrics"
+    METRICS_FILENAME: str = "vulnrelay.prom"
+
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",
     )
