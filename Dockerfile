@@ -2,7 +2,7 @@ FROM python:3.12-alpine
 
 RUN apk update && apk add --no-cache docker
 
-COPY --from=ghcr.io/astral-sh/uv:0.4 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /uvx /bin/
 
 WORKDIR /app
 
