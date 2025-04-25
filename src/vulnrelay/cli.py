@@ -14,6 +14,7 @@ logging.basicConfig(
 def main() -> None:
     if not settings.DD_URL:
         logging.warning("No DefectDojo URL configured. Skipping scanning")
+        return
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--scanners", nargs="+", help="List of scanners to run")
